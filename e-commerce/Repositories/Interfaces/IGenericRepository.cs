@@ -1,8 +1,12 @@
-﻿public interface IGenericRepository<T> where T : class
+﻿namespace e_commerce.Repositories.Interfaces
 {
-    Task<IEnumerable<T>> GetAllAsync();
-    Task<T> GetByIdAsync(int id);
-    Task AddAsync(T entity);
-    void Update(T entity);
-    void Delete(T entity);
+    public interface IGenericRepository<T> where T : class
+    {
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id);
+        Task<T> GetByNameAsync(string name);
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void Delete(T entity);
+    }
 }

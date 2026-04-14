@@ -28,7 +28,6 @@ namespace e_commerce.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public string ShippingAddress { get; set; }
-        public string PhoneNumber { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
@@ -42,6 +41,7 @@ namespace e_commerce.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public string StoreName { get; set; }
+        public string StoreAddress { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public double Rating { get; set; } = 0;

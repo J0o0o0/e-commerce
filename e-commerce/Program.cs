@@ -1,10 +1,14 @@
 using e_commerce.Data;
 using e_commerce.Models;
-using e_commerce.Services;
+using e_commerce.Repositories.Implementation;
+using e_commerce.Repositories.Interfaces;
+using e_commerce.Services.Implementation;
+using e_commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +33,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -41,14 +46,58 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    // Define the JWT security scheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token here (without 'Bearer' prefix)"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+
 var app = builder.Build();
+
+
+
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -62,3 +111,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

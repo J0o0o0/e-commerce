@@ -13,6 +13,7 @@ namespace e_commerce.Models
         public int Stock { get; set; }
         public int SellerId { get; set; }
         public int CategoryId { get; set; }
+        public bool IsActive { get; set; } = true;
         public double Rating { get; set; } = 0;
         public int ReviewCount { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
