@@ -9,9 +9,7 @@ namespace e_commerce.Models
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public decimal PricePerUnit { get; set; } // Price at time of purchase
-        public decimal TotalPrice { get; set; } // Quantity * PricePerUnit
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public decimal TotalPrice { get; set; } // Calculated as Quantity * PricePerUnit
         // Navigation properties
         public Order Order { get; set; }
         public Product Product { get; set; }

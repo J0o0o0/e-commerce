@@ -9,7 +9,10 @@ namespace e_commerce.Models
         public int BuyerId { get; set; }
         public decimal TotalPrice { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-        public string ShippingAddress { get; set; }
+        public PaymentProvider PaymentProvider { get; set; }
+        public string? PaymentIntentId { get; set; }   //  Stripe
+        public string? PaymobOrderId { get; set; }      //  Paymob
+        public string ShippingAddress { get; set; } // = ShippingAddress of the buyer at the time of order
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
@@ -26,4 +29,5 @@ namespace e_commerce.Models
         Delivered = 4,
         Cancelled = 5
     }
+    public enum PaymentProvider { Stripe, Paymob }
 }
