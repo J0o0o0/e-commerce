@@ -6,5 +6,12 @@ namespace e_commerce.Repositories.Interfaces
     {
         Task<Order?> GetOrderWithItemsAsync(int orderId);
         Task<IEnumerable<Order>> GetOrdersByBuyerIdAsync(int buyerId);
+
+
+        // Seller methods
+        Task<List<Order>> GetSellerOrdersAsync(int sellerId, int page, int pageSize, OrderStatus? statusFilter);
+        Task<int> GetSellerOrdersCountAsync(int sellerId, OrderStatus? statusFilter);
+        Task<Order?> GetSellerOrderDetailAsync(int orderId, int sellerId);
+        Task<OrderItem?> GetOrderItemByIdAsync(int orderItemId);
     }
 }

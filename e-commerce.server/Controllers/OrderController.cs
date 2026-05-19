@@ -89,5 +89,66 @@ namespace e_commerce.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        // ========================
+        // SELLER ENDPOINTS
+        // ========================
+
+        // GET api/order/seller?page=1&pageSize=10&status=1
+        [HttpGet("seller")]
+        public async Task<IActionResult> GetSellerOrders(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] int? status = null)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                var orders = await _orderService.GetSellerOrdersAsync(userId, page, pageSize, status);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // GET api/order/seller/5
+        [HttpGet("seller/{id}")]
+        public async Task<IActionResult> GetSellerOrderDetail(int orederId)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                var order = await _orderService.GetSellerOrderDetailAsync(orederId, userId);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        // PUT api/order/seller/item/10/status
+        [HttpPut("seller/item/{orderItemId}/status")]
+        public async Task<IActionResult> UpdateItemStatus(
+            int orderItemId,
+            [FromBody] UpdateItemStatusDto dto)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                var item = await _orderService.UpdateItemStatusAsync(orderItemId, userId, dto);
+                return Ok(item);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

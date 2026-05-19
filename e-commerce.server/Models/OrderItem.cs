@@ -22,7 +22,8 @@ namespace e_commerce.Models
         Approved = 2,       // seller approved
         Processing = 3,     // seller is preparing
         Shipped = 4,        // seller shipped
-        Delivered = 5,      // buyer received
-        Cancelled = 6       // seller cancelled this item
+        OutForDelivery = 5, // courier is on the way
+        Delivered = 6,      // buyer received
+        Cancelled = 7       // seller cancelled this item
     }
 }
