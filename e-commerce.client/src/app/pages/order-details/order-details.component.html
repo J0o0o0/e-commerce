@@ -1,0 +1,64 @@
+<div class="order-details-page">
+
+  <button class="back-btn" (click)="goBack()">← Back to Orders</button>
+
+  <!-- LOADING -->
+  <div class="loading" *ngIf="loading">
+    <p>Loading order...</p>
+  </div>
+
+  <!-- ORDER -->
+  <div class="order-details" *ngIf="!loading && order">
+
+    <!-- ORDER HEADER -->
+    <div class="detail-header">
+      <div>
+        <h2>{{ order.orderNumber }}</h2>
+        <p class="order-date">{{ order.orderDate | date : 'MMMM d, y h:mm a' }}</p>
+      </div>
+      <span class="status-badge" [class]="getStatusClass(order.status)">
+        {{ getStatusLabel(order.status) }}
+      </span>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- ORDER INFO -->
+      <div class="info-card">
+        <h3>Order Info</h3>
+        <div class="info-row">
+          <span>Payment</span>
+          <span>{{ getPaymentLabel(order.paymentProvider) }}</span>
+        </div>
+        <div class="info-row">
+          <span>Shipping</span>
+          <span>{{ order.shippingAddress }}</span>
+        </div>
+        <div class="info-row">
+          <span>Total</span>
+          <span class="total">${{ order.totalPrice | number : '2.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- ORDER ITEMS -->
+      <div class="items-card">
+        <h3>Items ({{ order.items?.length || 0 }})</h3>
+        <div class="detail-item" *ngFor="let item of order.items">
+          <img [src]="item.productImageUrl || '/assets/no-image.png'" [alt]="item.productName" />
+          <div class="detail-item-info">
+            <h4>{{ item.productName }}</h4>
+            <p>{{ item.quantity }}x ${{ item.pricePerUnit | number : '2.2-2' }}</p>
+          </div>
+          <p class="detail-item-total">${{ item.totalPrice | number : '2.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANCEL -->
+    <div class="cancel-section" *ngIf="order.status === 1">
+      <button class="cancel-btn" (click)="cancelOrder()">
+        Cancel Order
+      </button>
+    </div>
+  </div>
+</div>

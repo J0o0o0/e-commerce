@@ -1,0 +1,177 @@
+/* ========================================
+   AUTH PAGES — SHARED STYLES
+   ======================================== */
+
+/* PAGE */
+.login-page,
+.register-page {
+  height: 85vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px;
+  background: linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%);
+}
+
+/* CARD */
+.login-card,
+.register-card {
+  width: 440px;
+  max-width: 90%;
+  min-height: 400px;
+  padding: 40px 30px;
+  background: #18181B;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 0;
+}
+
+/* BUYER CARD */
+.buyer-card {
+  min-height: 650px;
+}
+
+/* SELLER CARD */
+.seller-card {
+  min-height: 700px;
+}
+
+/* MIDDLE */
+.middle {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* INPUT ROW — first & last name side by side */
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+
+  .input-row input {
+    flex: 1;
+  }
+
+/* TITLE */
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* INPUTS */
+.login-card input,
+.register-card input {
+  background: #1F1F23;
+  border: 1px solid #2F2F33;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.2s;
+  margin-bottom: 5px;
+}
+
+  .login-card input:focus,
+  .register-card input:focus {
+    border-color: white;
+  }
+
+/* TEXTAREA */
+.register-card textarea {
+  background: #1F1F23;
+  border: 1px solid #2F2F33;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.2s;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+  .register-card textarea:focus {
+    border-color: white;
+  }
+
+/* BOTTOM */
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* BUTTON */
+.login-card button,
+.register-card button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(45deg, #18181B, #27272A);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+  .login-card button:hover,
+  .register-card button:hover {
+    background: linear-gradient(45deg, #27272A, #3F3F46);
+  }
+
+  .login-card button:disabled,
+  .register-card button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+/* ERROR */
+.error {
+  color: #ff4d4d;
+  font-size: 12px;
+  min-height: 0;
+  height: 14px;
+  margin-top: 4px;
+  opacity: 1;
+  transition: 0.2s;
+}
+
+  .error.show {
+    opacity: 1;
+  }
+
+/* SWITCH LINKS */
+.switch-link {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #71717A;
+}
+
+  .switch-link a {
+    color: #A1A1AA;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+    .switch-link a:hover {
+      color: #ffffff;
+    }
+
+/* SELLER LINK DIVIDER */
+.seller-link {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #2F2F33;
+}

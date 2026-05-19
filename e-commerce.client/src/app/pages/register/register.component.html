@@ -1,0 +1,59 @@
+<div class="register-page">
+
+  <div class="register-card buyer-card">
+
+    <div class="top">
+      <h2 class="title">Register</h2>
+    </div>
+
+    <div class="middle">
+      <div class="input-row">
+        <input type="text"
+               placeholder="First Name"
+               [(ngModel)]="firstName" />
+
+        <input type="text"
+               placeholder="Last Name"
+               [(ngModel)]="lastName" />
+      </div>
+
+      <input type="text"
+             placeholder="Username"
+             [(ngModel)]="userName" />
+
+      <input type="email"
+             placeholder="Email"
+             [(ngModel)]="email" />
+
+      <input type="password"
+             placeholder="Password"
+             [(ngModel)]="password" />
+
+      <input type="password"
+             placeholder="Confirm Password"
+             [(ngModel)]="confirmPassword" />
+
+      <input type="tel"
+             placeholder="Phone Number"
+             [(ngModel)]="phoneNumber"
+             maxlength="11"
+             pattern="[0-9]{11}" />
+
+      <input type="text"
+             placeholder="Shipping Address"
+             [(ngModel)]="shippingAddress" />
+    </div>
+    <div class="bottom">
+      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+      <button (click)="register()">Register</button>
+      <p class="switch-link">
+        Already have an account? <a routerLink="/login">Log in</a>
+      </p>
+      <p class="switch-link seller-link">
+        Sell your products with us? <a routerLink="/register/seller">Register as Seller</a>
+      </p>
+    </div>
+
+  </div>
+
+</div>

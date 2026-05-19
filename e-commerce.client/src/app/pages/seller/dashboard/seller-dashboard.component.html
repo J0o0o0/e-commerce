@@ -1,0 +1,171 @@
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Seller Center</h3>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" (click)="showSection('products')">
+        📦 My Products
+      </a>
+      <a class="nav-item" (click)="showSection('add-product')">
+        ➕ Add Product
+      </a>
+      <a class="nav-item disabled">
+        📊 Statistics <span class="coming-soon">Soon</span>
+      </a>
+      <a class="nav-item disabled">
+        🛍️ Orders <span class="coming-soon">Soon</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- MY PRODUCTS -->
+    <div class="section" *ngIf="currentSection === 'products'">
+      <div class="section-header">
+        <h2>My Products</h2>
+        <button class="add-btn" (click)="showSection('add-product')">+ Add Product</button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" *ngIf="loading">
+        <p>Loading products...</p>
+      </div>
+
+      <!-- EMPTY -->
+      <div class="empty-state" *ngIf="!loading && products.length === 0">
+        <div class="empty-icon">📦</div>
+        <h3>No products yet</h3>
+        <p>Start selling by adding your first product.</p>
+        <button class="shop-btn" (click)="showSection('add-product')">Add Product</button>
+      </div>
+
+      <!-- PRODUCT GRID -->
+      <div class="product-grid" *ngIf="!loading && products.length > 0">
+        <div class="product-card" *ngFor="let product of products">
+          <div class="product-image" routerLink="/product/{{ product.id }}">
+            <img [src]="product.images?.[0] || '/assets/no-image.png'" [alt]="product.name" />
+            <span class="status-badge" [class.active]="product.isActive" [class.inactive]="!product.isActive">
+              {{ product.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="product-info">
+            <h4 class="product-name" routerLink="/product/{{ product.id }}">{{ product.name }}</h4>
+            <p class="product-category">{{ product.categoryName }}</p>
+            <div class="product-meta">
+              <span class="price">${{ product.price | number : '2.2-2' }}</span>
+              <span class="stock" [class.low1]="product.stock <= 10" [class.low2]="product.stock <= 5">
+                Stock: {{ product.stock }}
+              </span>
+            </div>
+          </div>
+          <div class="product-actions">
+            <button class="action-btn edit" (click)="editProduct(product)">✏️ Edit</button>
+            <button class="action-btn delete" (click)="deleteProduct(product.id)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD / EDIT PRODUCT -->
+    <div class="section" *ngIf="currentSection === 'add-product' || currentSection === 'edit-product'">
+      <div class="section-header">
+        <button class="back-btn" (click)="showSection('products')">← Back</button>
+        <h2>{{ currentSection === 'edit-product' ? 'Edit Product' : 'Add New Product' }}</h2>
+      </div>
+
+      <div class="form-card">
+        <form (ngSubmit)="onSubmitProduct()" #productForm="ngForm">
+
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text"
+                   placeholder="Enter product name"
+                   [(ngModel)]="productForm_data.name"
+                   name="name"
+                   required />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea placeholder="Describe your product..."
+                      [(ngModel)]="productForm_data.description"
+                      name="description"
+                      rows="4"
+                      required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Price ($)</label>
+              <input type="number"
+                     placeholder="0.00"
+                     [(ngModel)]="productForm_data.price"
+                     name="price"
+                     min="0.01"
+                     step="0.01"
+                     required />
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number"
+                     placeholder="0"
+                     [(ngModel)]="productForm_data.stock"
+                     name="stock"
+                     min="0"
+                     required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text"
+                     placeholder="e.g. Electronics, Clothing"
+                     [(ngModel)]="productForm_data.categoryName"
+                     name="categoryName"
+                     required />
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select [(ngModel)]="productForm_data.isActive" name="isActive">
+                <option [ngValue]="true">Active</option>
+                <option [ngValue]="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Image URLs</label>
+            <div class="image-inputs">
+              <div class="image-input-row" *ngFor="let img of productForm_data.images; let i = index">
+                <input type="text"
+                       placeholder="https://example.com/image.jpg"
+                       [(ngModel)]="productForm_data.images[i]"
+                       [name]="'image_' + i" />
+                <button type="button" class="remove-img-btn" (click)="removeImageInput(i)">✕</button>
+              </div>
+            </div>
+            <button type="button" class="add-img-btn" (click)="addImageInput()">+ Add Image URL</button>
+          </div>
+
+          <div class="form-errors" *ngIf="errorMessages.length > 0">
+            <p *ngFor="let msg of errorMessages" class="form-error">{{ msg }}</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="cancel-btn" (click)="showSection('products')">Cancel</button>
+            <button type="submit" class="submit-btn" [disabled]="submitting">
+              {{ submitting ? 'Saving...' : (currentSection === 'edit-product' ? 'Update Product' : 'Add Product') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

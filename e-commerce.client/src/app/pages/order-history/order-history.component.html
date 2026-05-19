@@ -1,0 +1,55 @@
+<div class="orders-page">
+
+  <div class="orders-header">
+    <h2>My Orders</h2>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" *ngIf="loading">
+    <p>Loading orders...</p>
+  </div>
+
+  <!-- EMPTY -->
+  <div class="empty-state" *ngIf="!loading && orders.length === 0">
+    <div class="empty-icon">📦</div>
+    <h3>No orders yet</h3>
+    <p>When you place your first order, it will appear here.</p>
+    <button class="shop-btn" routerLink="/products">Start Shopping</button>
+  </div>
+
+  <!-- ORDER LIST -->
+  <div class="orders-list" *ngIf="!loading && orders.length > 0">
+    <div class="order-card" *ngFor="let order of orders" (click)="viewOrder(order.id)">
+
+      <div class="order-top">
+        <div class="order-number">
+          <span class="label">Order</span>
+          <span class="value">{{ order.orderNumber }}</span>
+        </div>
+        <span class="status-badge" [class]="getStatusClass(order.status)">
+          {{ getStatusLabel(order.status) }}
+        </span>
+      </div>
+
+      <div class="order-items-preview" *ngIf="order.items && order.items.length > 0">
+        <div class="preview-item" *ngFor="let item of order.items | slice:0:3">
+          <img [src]="item.productImageUrl || '/assets/no-image.png'" [alt]="item.productName" />
+        </div>
+        <span class="more-items" *ngIf="order.items.length > 3">
+          +{{ order.items.length - 3 }} more
+        </span>
+      </div>
+
+      <div class="order-bottom">
+        <span class="order-date">{{ order.orderDate | date : 'MMM d, y' }}</span>
+        <span class="order-total">${{ order.totalPrice | number : '2.2-2' }}</span>
+      </div>
+
+      <div class="order-actions" *ngIf="order.status === 1">
+        <button class="cancel-btn" (click)="cancelOrder(order.id, $event)">
+          Cancel Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

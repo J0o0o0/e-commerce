@@ -1,0 +1,54 @@
+<div class="details-container" *ngIf="product">
+
+  <!-- LEFT: Images -->
+  <div class="images">
+    <img class="main-img" [src]="selectedImage" />
+
+    <div class="thumbs">
+      <img *ngFor="let img of product.images"
+           [src]="img"
+           (click)="selectedImage = img"
+           [class.active]="selectedImage === img">
+    </div>
+  </div>
+
+  <!-- RIGHT: Info -->
+  <div class="info">
+    <h1>{{product.name}}</h1>
+
+    <p class="desc">
+      {{product.description}}
+    </p>
+
+    <div class="categorys">
+      <div class="category">
+        {{product.categoryName}}
+      </div>
+      <div class="category">
+        Sold By {{product.sellerName}}
+      </div>
+    </div>
+    <div class="price">
+      {{product.price | currency}}
+    </div>
+    <div class="quantity-section">
+      <span class="qty-label">Quantity:</span>
+      <div class="qty-control">
+        <button class="qty-btn" (click)="decreaseQty()">−</button>
+        <span class="qty-value">{{ quantity }}</span>
+        <button class="qty-btn" (click)="increaseQty()">+</button>
+      </div>
+    </div>
+
+    <!-- ADD TO CART / VIEW CART -->
+    <div class="cart-actions">
+      <button class="btn add-btn" *ngIf="!addedToCart" (click)="addToCart()">
+        Add to Cart
+      </button>
+      <button class="btn success-btn" *ngIf="addedToCart" (click)="goToCart()">
+        ✓ Added — View Cart
+      </button>
+      <p class="cart-error" *ngIf="cartError">{{ cartError }}</p>
+    </div>
+  </div>
+  </div>

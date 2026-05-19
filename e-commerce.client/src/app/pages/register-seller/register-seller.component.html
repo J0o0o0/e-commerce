@@ -1,0 +1,66 @@
+<div class="register-page">
+
+  <div class="register-card seller-card">
+
+    <div class="top">
+      <h2 class="title">Register as Seller</h2>
+    </div>
+
+    <div class="middle">
+      <div class="input-row">
+        <input type="text"
+               placeholder="First Name"
+               [(ngModel)]="firstName" />
+
+        <input type="text"
+               placeholder="Last Name"
+               [(ngModel)]="lastName" />
+      </div>
+
+      <input type="text"
+             placeholder="Username"
+             [(ngModel)]="userName" />
+
+      <input type="email"
+             placeholder="Email"
+             [(ngModel)]="email" />
+
+      <input type="password"
+             placeholder="Password"
+             [(ngModel)]="password" />
+      <input type="password"
+             placeholder="Confirm Password"
+             [(ngModel)]="confirmPassword" />
+
+      <input type="tel"
+             placeholder="Phone Number"
+             [(ngModel)]="phoneNumber"
+             maxlength="11"
+             pattern="[0-9]{11}" />
+
+      <input type="text"
+             placeholder="Store Name"
+             [(ngModel)]="storeName" />
+
+      <input type="text"
+             placeholder="Store Address"
+             [(ngModel)]="storeAddress" />
+
+      <textarea placeholder="Tell us about your store..."
+                [(ngModel)]="description"
+                rows="3"></textarea>
+    </div>
+    <div class="bottom">
+      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+      <button (click)="registerSeller()">Register</button>
+      <p class="switch-link">
+        Already have an account? <a routerLink="/login">Log in</a>
+      </p>
+      <p class="switch-link seller-link">
+        Not a seller? <a routerLink="/register">Register as Buyer</a>
+      </p>
+    </div>
+
+  </div>
+
+</div>

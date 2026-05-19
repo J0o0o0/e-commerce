@@ -1,0 +1,45 @@
+<div class="confirmation-page">
+
+  <div class="confirmation-card">
+    <div class="success-icon">✓</div>
+    <h2>Order Placed Successfully!</h2>
+    <p class="thank-you">Thank you for your purchase.</p>
+
+    <div class="order-info" *ngIf="order">
+      <div class="info-row">
+        <span>Order Number</span>
+        <span class="highlight">{{ order.orderNumber }}</span>
+      </div>
+      <div class="info-row">
+        <span>Total</span>
+        <span class="highlight">${{ order.totalPrice | number : '2.2-2' }}</span>
+      </div>
+      <div class="info-row">
+        <span>Payment</span>
+        <span>{{ getPaymentLabel(order.paymentProvider) }}</span>
+      </div>
+      <div class="info-row">
+        <span>Shipping To</span>
+        <span>{{ order.shippingAddress }}</span>
+      </div>
+    </div>
+
+    <div class="order-items" *ngIf="order?.items?.length > 0">
+      <h4>Items Ordered</h4>
+      <div class="confirm-item" *ngFor="let item of order.items">
+        <img [src]="item.productImageUrl || '/assets/no-image.png'" [alt]="item.productName" />
+        <div class="confirm-item-info">
+          <p class="confirm-item-name">{{ item.productName }}</p>
+          <p class="confirm-item-qty">{{ item.quantity }}x ${{ item.pricePerUnit | number : '2.2-2' }}</p>
+        </div>
+        <p class="confirm-item-total">${{ item.totalPrice | number : '2.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="confirmation-actions">
+      <button class="primary-btn" routerLink="/orders">View Orders</button>
+      <button class="secondary-btn" routerLink="/">Continue Shopping</button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,57 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo" routerLink="/">MyShop</div>
+  </div>
+  <div class="nav-center">
+    <div class="search-box">
+      <input type="text"
+             placeholder="Search products..."
+             [(ngModel)]="searchTerm"
+             (keyup.enter)="onSearch()" />
+    </div>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+    <a routerLink="/products" routerLinkActive="active">Products</a>
+  </div>
+
+  <div class="nav-right">
+    <!-- NOT LOGGED IN -->
+    <ng-container *ngIf="!isLoggedIn">
+      <button class="auth-btn" routerLink="/login">Login</button>
+      <button class="auth-btn outline" routerLink="/register">Register</button>
+    </ng-container>
+
+    <!-- LOGGED IN -->
+    <div class="user-dropdown" *ngIf="isLoggedIn">
+
+      <button class="user-pill" (click)="toggleMenu()">
+        <div class="avatar">
+          {{ userName?.charAt(0)?.toUpperCase() }}
+        </div>
+        <span class="name">{{ userName }}</span>
+      </button>
+
+      <div class="dropdown-menu" [class.show]="menuOpen">
+        <div class="dropdown-item" routerLink="/seller/dashboard" *ngIf="isLoggedIn && userRole == 'Seller'">
+          👤 My Dashboard
+        </div>
+        <div class="dropdown-item" routerLink="/account">
+          👤 Account Details
+        </div>
+
+        <div class="dropdown-item" routerLink="/orders">
+          📦 Orders
+        </div>
+
+        <div class="dropdown-item logout" (click)="logout()">
+          🚪 Logout
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cart" routerLink="/cart" *ngIf="isLoggedIn && userRole == 'Buyer'">
+      🛒 <span class="count">{{ cartItemCount }}</span>
+    </div>
+
+  </div>
+</nav>

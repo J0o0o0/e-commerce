@@ -1,0 +1,229 @@
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #18181B;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* LEFT */
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* CENTER */
+.nav-center {
+  display: flex;
+  gap: 20px;
+}
+
+  .nav-center a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+  }
+
+    .nav-center a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: white;
+      left: 0;
+      bottom: -3px;
+      transition: 0.3s;
+    }
+
+    .nav-center a:hover::after {
+      width: 100%;
+    }
+
+/* RIGHT */
+.cart {
+  cursor: pointer;
+  position: relative;
+  font-size: 18px;
+}
+
+.count {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: red;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+.active {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+.nav-center input {
+  width: 260px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #2F2F33;
+  background: #1F1F23;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+  .nav-center input::placeholder {
+    color: #A1A1AA;
+  }
+
+  .nav-center input:focus {
+    border-color: #3F3F46;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+    background: #232327;
+  }
+
+  .nav-center input:hover {
+    border-color: #3F3F46;
+  }
+.auth-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: transparent;
+  color: white;
+}
+
+  /* LOGIN = primary */
+  .auth-btn:not(.outline):not(.danger) {
+    background: #ffffff;
+    color: #18181B;
+  }
+
+    .auth-btn:not(.outline):not(.danger):hover {
+      background: #f4f4f5;
+      transform: translateY(-1px);
+    }
+
+  /* REGISTER = outline */
+  .auth-btn.outline {
+    border: 1px solid #3F3F46;
+    background: transparent;
+  }
+
+    .auth-btn.outline:hover {
+      background: #232327;
+      border-color: #52525B;
+    }
+
+  /* LOGOUT (optional subtle danger feel) */
+  .auth-btn.danger {
+    border: 1px solid #3F3F46;
+    background: transparent;
+  }
+
+    .auth-btn.danger:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: #52525B;
+      color: #ff4d4d;
+    }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-dropdown {
+  position: relative;
+}
+
+/* pill button */
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #232327;
+  color: white;
+  border: 1px solid #2F2F33;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+  .user-pill:hover {
+    background: #2F2F33;
+  }
+
+/* avatar */
+.avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #3F3F46;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+
+/* items */
+.dropdown-item {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+  .dropdown-item:hover {
+    background: #232327;
+  }
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: #18181B;
+  border: 1px solid #2F2F33;
+  border-radius: 10px;
+  width: 180px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  overflow: hidden;
+  z-index: 1000;
+  /* hidden state */
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: all .4s ease;
+}
+
+  /* visible state */
+  .dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+.name {
+  font-size: 13px;
+  font-weight: 500;
+  color: white; /* 🔥 ensure visibility */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* logout special */
+.logout {
+  color: #ff4d4d;
+}
