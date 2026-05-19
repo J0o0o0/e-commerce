@@ -137,6 +137,10 @@ namespace e_commerce.Data
             modelBuilder.Entity<OrderItem>()
                 .Property(oi => oi.TotalPrice)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.OrderNumber)
+                .HasMaxLength(30);
         }
     }
 }
