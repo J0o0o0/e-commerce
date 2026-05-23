@@ -47,7 +47,7 @@ import { CommonModule } from '@angular/common';
     BrowserAnimationsModule,
     FormsModule,
     RouterModule,
-    CommonModule
+    CommonModule,
   ],
   providers: [
     {

@@ -32,7 +32,7 @@
       </div>
 
       <div class="order-items-preview" *ngIf="order.items && order.items.length > 0">
-        <div class="preview-item" *ngFor="let item of order.items | slice:0:3">
+        <div class="preview-item" *ngFor="let item of order.items ">
           <img [src]="item.productImageUrl || '/assets/no-image.png'" [alt]="item.productName" />
         </div>
         <span class="more-items" *ngIf="order.items.length > 3">

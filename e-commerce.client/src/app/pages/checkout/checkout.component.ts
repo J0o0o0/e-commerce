@@ -39,7 +39,7 @@ export class CheckoutComponent implements OnInit {
       next: (res) => {
         this.cartItems = res.data.items;
         this.totalPrice = res.data.totalPrice;
-        this.shippingAddress = localStorage.getItem('shippingAddress') || '';
+        this.shippingAddress = res.data.shippingAddress //localStorage.getItem('shippingAddress') || '';
         this.loading = false;
       },
       error: () => {

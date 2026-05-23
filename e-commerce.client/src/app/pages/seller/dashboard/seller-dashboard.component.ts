@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-seller-dashboard',
@@ -10,7 +10,10 @@ import { Router } from '@angular/router';
 })
 export class SellerDashboardComponent implements OnInit {
 
+  // === LAYOUT ===
   currentSection: string = 'products';
+
+  // === PRODUCTS ===
   products: any[] = [];
   loading: boolean = true;
   submitting: boolean = false;
@@ -28,7 +31,18 @@ export class SellerDashboardComponent implements OnInit {
     isActive: true
   };
 
+  // === ORDERS ===
+  orders: any[] = [];
+  ordersLoading: boolean = true;
+  selectedOrder: any = null;
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  totalCount: number = 0;
+  orderStatusFilter: number | null = null;
+
   private baseUrl = `${environment.baseUrl}/api/Product`;
+  private orderUrl = `${environment.baseUrl}/api/Order`;
 
   constructor(
     private http: HttpClient,
@@ -39,36 +53,28 @@ export class SellerDashboardComponent implements OnInit {
     this.validateAccess();
     this.loadProducts();
   }
-  private validateAccess(): void {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
 
-    if (!token || role !== 'Seller') {
-      this.router.navigate(['/login']);
-      return;
-    }
-    // Double-check token expiry
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const isExpired = payload.exp * 1000 < Date.now();
+  // ========================
+  // SECTION SWITCHING
+  // ========================
 
-      if (isExpired) {
-        localStorage.clear();
-        this.router.navigate(['/login']);
-      }
-    } catch {
-      localStorage.clear();
-      this.router.navigate(['/login']);
-    }
-  }
   showSection(section: string): void {
     this.currentSection = section;
     this.errorMessages = [];
+    this.selectedOrder = null;
 
     if (section === 'add-product') {
       this.resetForm();
     }
+
+    if (section === 'orders') {
+      this.loadOrders();
+    }
   }
+
+  // ========================
+  // PRODUCTS
+  // ========================
 
   loadProducts(): void {
     this.loading = true;
@@ -143,7 +149,6 @@ export class SellerDashboardComponent implements OnInit {
     this.errorMessages = [];
     this.submitting = true;
 
-    // Validation
     if (!this.productForm_data.name || !this.productForm_data.description ||
       !this.productForm_data.price || !this.productForm_data.stock ||
       !this.productForm_data.categoryName) {
@@ -152,7 +157,6 @@ export class SellerDashboardComponent implements OnInit {
       return;
     }
 
-    // Filter out empty image URLs
     const body = {
       ...this.productForm_data,
       images: this.productForm_data.images.filter((img: string) => img.trim() !== '')
@@ -187,5 +191,215 @@ export class SellerDashboardComponent implements OnInit {
         }
       });
     }
+  }
+
+  // ========================
+  // ORDERS
+  // ========================
+
+  loadOrders(): void {
+    this.ordersLoading = true;
+
+    let url = `${this.orderUrl}/seller?page=${this.currentPage}&pageSize=${this.pageSize}`;
+    if (this.orderStatusFilter !== null) {
+      url += `&status=${this.orderStatusFilter}`;
+    }
+
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        this.orders = res.data || [];
+        this.totalPages = res.totalPages || 0;
+        this.totalCount = res.totalCount || 0;
+        this.ordersLoading = false;
+      },
+      error: () => {
+        this.ordersLoading = false;
+      }
+    });
+  }
+
+  filterOrders(status: number | null): void {
+    this.orderStatusFilter = status;
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  changePage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.loadOrders();
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start < maxVisible - 1) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  viewOrderDetail(order: any): void {
+    this.selectedOrder = null;
+    const url = `${this.orderUrl}/seller/${order.orderId}`;
+
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        this.selectedOrder = res;
+      },
+      error: () => {
+        alert('Failed to load order details.');
+      }
+    });
+  }
+
+  closeOrderDetail(): void {
+    this.selectedOrder = null;
+    this.loadOrders();
+  }
+
+  updateItemStatus(orderItemId: number, newStatus: number): void {
+    if (!confirm('Are you sure you want to update this item status?')) return;
+
+    this.http.put<any>(`${this.orderUrl}/seller/item/${orderItemId}/status`, {
+      newStatus: newStatus
+    }).subscribe({
+      next: () => {
+        if (this.selectedOrder) {
+          this.viewOrderDetail({ orderId: this.selectedOrder.orderId });
+        }
+        this.loadOrders();
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || err?.error || 'Failed to update status.';
+        alert(typeof msg === 'string' ? msg : 'Failed to update status.');
+      }
+    });
+  }
+
+  canUpdateStatus(itemStatus: number): boolean {
+    return itemStatus === 1 || itemStatus === 2 || itemStatus === 3 || itemStatus === 4 || itemStatus === 5;
+  }
+
+  // ========================
+  // AUTH
+  // ========================
+
+  private validateAccess(): void {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!token || role !== 'Seller') {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const isExpired = payload.exp * 1000 < Date.now();
+
+      if (isExpired) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      }
+    } catch {
+      localStorage.clear();
+      this.router.navigate(['/login']);
+    }
+  }
+
+  // ========================
+  // HELPERS
+  // ========================
+
+  img(url: string): string {
+    return url && url.trim() ? url : '/assets/no-image.png';
+  }
+
+  getOrderStatusLabel(status: number): string {
+    const labels: any = {
+      1: 'Pending',
+      2: 'Processing',
+      3: 'Shipped',
+      4: 'Out for Delivery',
+      5: 'Delivered',
+      6: 'Cancelled'
+    };
+    return labels[status] || 'Unknown';
+  }
+
+  getOrderStatusClass(status: number): string {
+    const classes: any = {
+      1: 'pending',
+      2: 'processing',
+      3: 'shipped',
+      4: 'outfordelivery',
+      5: 'delivered',
+      6: 'cancelled'
+    };
+    return classes[status] || 'pending';
+  }
+
+  getItemStatusLabel(status: number): string {
+    const labels: any = {
+      1: 'Pending',
+      2: 'Approved',
+      3: 'Processing',
+      4: 'Shipped',
+      5: 'out-for-delivery',
+      6: 'Delivered',
+      7: 'Cancelled'
+    };
+    return labels[status] || 'Unknown';
+  }
+
+  getItemStatusClass(status: number): string {
+    const classes: any = {
+      1: 'pending',
+      2: 'approved',
+      3: 'processing',
+      4: 'shipped',
+      5: 'out-for-delivery',
+      6: 'delivered',
+      7: 'cancelled'
+    };
+    return classes[status] || 'pending';
+  }
+
+  getPaymentLabel(provider: number): string {
+    switch (provider) {
+      case 1: return 'Cash on Delivery';
+      case 2: return 'Stripe';
+      case 3: return 'Paymob';
+      default: return 'Unknown';
+    }
+  }
+
+  getPaymentStatusLabel(status: number): string {
+    const labels: any = {
+      1: 'Pending',
+      2: 'Paid',
+      3: 'Failed',
+      4: 'Refunded'
+    };
+    return labels[status] || 'Unknown';
+  }
+
+  getPaymentStatusClass(status: number): string {
+    const classes: any = {
+      1: 'pending-payment',
+      2: 'paid',
+      3: 'refunded',
+      4: 'refunded'
+    };
+    return classes[status] || '';
   }
 }

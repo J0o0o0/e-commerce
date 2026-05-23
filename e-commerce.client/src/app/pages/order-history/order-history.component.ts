@@ -30,7 +30,7 @@ export class OrderHistoryComponent implements OnInit {
     this.loading = true;
     this.http.get<any>(this.orderUrl + '/history').subscribe({
       next: (res) => {
-        this.orders = Array.isArray(res) ? res : [];
+        this.orders = res;
         this.loading = false;
       },
       error: () => {

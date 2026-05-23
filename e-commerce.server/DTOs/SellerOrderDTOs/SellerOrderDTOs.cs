@@ -9,6 +9,7 @@ namespace e_commerce.DTOs.OrderDTOs
         public string OrderNumber { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
+        public PaymentProvider PaymentProvider { get; set; }
         public decimal OrderTotalPrice { get; set; }
         public decimal MyItemsTotal { get; set; }
         public DateTime OrderDate { get; set; }
@@ -18,6 +19,7 @@ namespace e_commerce.DTOs.OrderDTOs
         // Buyer info
         public string BuyerName { get; set; }
         public string BuyerEmail { get; set; }
+        public string BuyerPhoneNumber { get; set; }
         public string ShippingAddress { get; set; }
 
         // Only this seller's items

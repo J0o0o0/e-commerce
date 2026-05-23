@@ -43,6 +43,7 @@ namespace e_commerce.Services.Implementation
         public async Task<CartDto> GetCartAsync(int userId)
         {
             var cart = await GetCartObjectAsync(userId);
+            var shiping = cart.Buyer.ShippingAddress;
             return new CartDto
             {
                 Items = cart.Items.Select(i => new CartItemDto
@@ -53,7 +54,9 @@ namespace e_commerce.Services.Implementation
                     Price = i.Product.Price,
                     Quantity = i.Quantity,
                     PriceAtAddTime = i.PriceAtAddTime
+
                 }).ToList(),
+                ShippingAddress = cart.Buyer.ShippingAddress,
                 TotalPrice = cart.Items.Sum(i => i.Quantity * i.PriceAtAddTime),
             };
         }

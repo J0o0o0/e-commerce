@@ -114,7 +114,7 @@ namespace e_commerce.Controllers
         }
 
         // GET api/order/seller/5
-        [HttpGet("seller/{id}")]
+        [HttpGet("seller/{orederId}")]
         public async Task<IActionResult> GetSellerOrderDetail(int orederId)
         {
             try

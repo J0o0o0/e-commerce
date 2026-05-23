@@ -41,7 +41,7 @@ namespace e_commerce.Repositories.Implementation
         // === SELLER METHODS ===
 
         // Get orders that contain this seller's products (paginated)
-        public async Task<List<Order>> GetSellerOrdersAsync(int sellerId, int page, int pageSize, OrderStatus? statusFilter)
+        public async Task<List<Order>> GetSellerOrdersAsync(int sellerId, int page, int pageSize, OrderItemStatus? statusFilter)
         {
             var query = _context.Orders
                 .Include(o => o.Items)
@@ -53,7 +53,10 @@ namespace e_commerce.Repositories.Implementation
 
             if (statusFilter.HasValue)
             {
-                query = query.Where(o => o.Status == statusFilter.Value);
+                query = query
+                    .Where(o => o.Items
+                        .Where(i => i.Product.SellerId == sellerId)
+                            .Any(i => i.Status == statusFilter));
             }
 
             return await query

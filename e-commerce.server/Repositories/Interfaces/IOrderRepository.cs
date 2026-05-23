@@ -9,7 +9,7 @@ namespace e_commerce.Repositories.Interfaces
 
 
         // Seller methods
-        Task<List<Order>> GetSellerOrdersAsync(int sellerId, int page, int pageSize, OrderStatus? statusFilter);
+        Task<List<Order>> GetSellerOrdersAsync(int sellerId, int page, int pageSize, OrderItemStatus? statusFilter);
         Task<int> GetSellerOrdersCountAsync(int sellerId, OrderStatus? statusFilter);
         Task<Order?> GetSellerOrderDetailAsync(int orderId, int sellerId);
         Task<OrderItem?> GetOrderItemByIdAsync(int orderItemId);

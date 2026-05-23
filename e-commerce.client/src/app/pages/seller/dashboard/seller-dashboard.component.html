@@ -6,17 +6,17 @@
       <h3>Seller Center</h3>
     </div>
     <nav class="sidebar-nav">
-      <a class="nav-item active" (click)="showSection('products')">
+      <a class="nav-item" [class.active]="currentSection === 'products'" (click)="showSection('products')">
         📦 My Products
       </a>
-      <a class="nav-item" (click)="showSection('add-product')">
+      <a class="nav-item" [class.active]="currentSection === 'add-product' || currentSection === 'edit-product'" (click)="showSection('add-product')">
         ➕ Add Product
+      </a>
+      <a class="nav-item" [class.active]="currentSection === 'orders'" (click)="showSection('orders')">
+        🛍️ Orders
       </a>
       <a class="nav-item disabled">
         📊 Statistics <span class="coming-soon">Soon</span>
-      </a>
-      <a class="nav-item disabled">
-        🛍️ Orders <span class="coming-soon">Soon</span>
       </a>
     </nav>
   </div>
@@ -24,7 +24,9 @@
   <!-- MAIN CONTENT -->
   <div class="main-content">
 
-    <!-- MY PRODUCTS -->
+    <!-- ======================== -->
+    <!-- MY PRODUCTS              -->
+    <!-- ======================== -->
     <div class="section" *ngIf="currentSection === 'products'">
       <div class="section-header">
         <h2>My Products</h2>
@@ -47,18 +49,18 @@
       <!-- PRODUCT GRID -->
       <div class="product-grid" *ngIf="!loading && products.length > 0">
         <div class="product-card" *ngFor="let product of products">
-          <div class="product-image" routerLink="/product/{{ product.id }}">
+          <div class="product-image">
             <img [src]="product.images?.[0] || '/assets/no-image.png'" [alt]="product.name" />
             <span class="status-badge" [class.active]="product.isActive" [class.inactive]="!product.isActive">
               {{ product.isActive ? 'Active' : 'Inactive' }}
             </span>
           </div>
           <div class="product-info">
-            <h4 class="product-name" routerLink="/product/{{ product.id }}">{{ product.name }}</h4>
+            <h4 class="product-name">{{ product.name }}</h4>
             <p class="product-category">{{ product.categoryName }}</p>
             <div class="product-meta">
               <span class="price">${{ product.price | number : '2.2-2' }}</span>
-              <span class="stock" [class.low1]="product.stock <= 10" [class.low2]="product.stock <= 5">
+              <span class="stock" [class.low]="product.stock <= 5">
                 Stock: {{ product.stock }}
               </span>
             </div>
@@ -71,7 +73,9 @@
       </div>
     </div>
 
-    <!-- ADD / EDIT PRODUCT -->
+    <!-- ======================== -->
+    <!-- ADD / EDIT PRODUCT       -->
+    <!-- ======================== -->
     <div class="section" *ngIf="currentSection === 'add-product' || currentSection === 'edit-product'">
       <div class="section-header">
         <button class="back-btn" (click)="showSection('products')">← Back</button>
@@ -142,7 +146,7 @@
           <div class="form-group">
             <label>Image URLs</label>
             <div class="image-inputs">
-              <div class="image-input-row" *ngFor="let img of productForm_data.images; let i = index">
+              <div class="image-input-row" *ngFor="let imgUrl of productForm_data.images; let i = index">
                 <input type="text"
                        placeholder="https://example.com/image.jpg"
                        [(ngModel)]="productForm_data.images[i]"
@@ -164,6 +168,180 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- ======================== -->
+    <!-- ORDERS                   -->
+    <!-- ======================== -->
+    <div class="section" *ngIf="currentSection === 'orders'">
+
+      <!-- ORDER LIST VIEW -->
+      <div *ngIf="!selectedOrder">
+
+        <div class="section-header">
+          <h2>Orders</h2>
+          <div class="filter-group">
+            <button class="filter-btn" [class.active]="orderStatusFilter === null" (click)="filterOrders(null)">All</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 1" (click)="filterOrders(1)">Pending</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 2" (click)="filterOrders(2)">Approved</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 3" (click)="filterOrders(3)">Processing</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 4" (click)="filterOrders(4)">Shipped</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 5" (click)="filterOrders(5)">Out for Delivery</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 6" (click)="filterOrders(6)">Delivered</button>
+            <button class="filter-btn" [class.active]="orderStatusFilter === 7" (click)="filterOrders(7)">Cancelled</button>
+          </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading" *ngIf="ordersLoading">
+          <p>Loading orders...</p>
+        </div>
+
+        <!-- EMPTY -->
+        <div class="empty-state" *ngIf="!ordersLoading && orders.length === 0">
+          <div class="empty-icon">🛍️</div>
+          <h3>No orders yet</h3>
+          <p>Orders containing your products will appear here.</p>
+        </div>
+
+        <!-- ORDER CARDS -->
+        <div class="orders-grid" *ngIf="!ordersLoading && orders.length > 0">
+          <div class="order-card" *ngFor="let order of orders" (click)="viewOrderDetail(order)">
+            <div class="order-card-top">
+              <div class="order-card-info">
+                <span class="order-number">{{ order.orderNumber }}</span>
+                <span class="order-date">{{ order.orderDate | date : 'MMM d, y' }}</span>
+              </div>
+
+              <span class="status-badge" [class]="getOrderStatusClass(order.orderStatus)">
+                {{ getOrderStatusLabel(order.orderStatus) }}
+              </span>
+            </div>
+
+            <div class="order-card-buyer">
+              <span class="buyer-name">👤 {{ order.buyerName }}</span>
+              <span class="buyer-email">{{ order.buyerEmail }}</span>
+
+            </div>
+
+            <div class="order-card-items">
+              <div class="order-card-item" *ngFor="let item of order.myItems">
+                <img [src]="img(item.productImageUrl)" [alt]="item.productName" />
+                <div class="order-card-item-info">
+                  <span class="item-name">{{ item.productName }}</span>
+                  <span class="item-qty">{{ item.quantity }}x ${{ item.pricePerUnit | number : '2.2-2' }}</span>
+                </div>
+                <span class="item-status" [class]="getItemStatusClass(item.status)">
+                  {{ getItemStatusLabel(item.status) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="order-card-bottom">
+              <span class="items-count">{{ order.myItemsCount }} of {{ order.totalItemsInOrder }} items</span>
+              <span class="my-total">${{ order.myItemsTotal | number : '2.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination" *ngIf="totalPages > 1">
+          <button class="page-btn" [disabled]="currentPage <= 1" (click)="changePage(currentPage - 1)">← Prev</button>
+          <div class="page-numbers">
+            <button class="page-num" *ngFor="let p of getPageNumbers()" [class.active]="p === currentPage" (click)="changePage(p)">
+              {{ p }}
+            </button>
+          </div>
+          <button class="page-btn" [disabled]="currentPage >= totalPages" (click)="changePage(currentPage + 1)">Next →</button>
+        </div>
+      </div>
+
+      <!-- ORDER DETAIL VIEW -->
+      <div *ngIf="selectedOrder">
+
+        <div class="section-header">
+          <button class="back-btn" (click)="closeOrderDetail()">← Back to Orders</button>
+          <h2>{{ selectedOrder.orderNumber }}</h2>
+          
+        </div>
+
+        <div class="detail-grid">
+          <!-- BUYER INFO -->
+          <div class="info-card">
+            <h3>Buyer Info</h3>
+            <div class="info-row">
+              <span>Name</span>
+              <span>{{ selectedOrder.buyerName }}</span>
+            </div>
+            <div class="info-row">
+              <span>Email</span>
+              <span>{{ selectedOrder.buyerEmail }}</span>
+            </div>
+            <div class="info-row">
+              <span>Phone Number</span>
+              <span>{{ selectedOrder.buyerPhoneNumber }}</span>
+            </div>
+            <div class="info-row">
+              <span>Shipping</span>
+              <span>{{ selectedOrder.shippingAddress }}</span>
+            </div>
+            <div class="info-row">
+              <span>Payment</span>
+              <span>{{ getPaymentLabel(selectedOrder.paymentProvider) }}</span>
+            </div>
+            <div class="info-row">
+              <span>Payment Status</span>
+              <span [class]="getPaymentStatusClass(selectedOrder.paymentStatus)">
+                {{ getPaymentStatusLabel(selectedOrder.paymentStatus) }}
+              </span>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-row total">
+              <span>Order Total</span>
+              <span>${{ selectedOrder.orderTotalPrice | number : '2.2-2' }}</span>
+            </div>
+            <div class="info-row total my-items">
+              <span>My Items Total</span>
+              <span>${{ selectedOrder.myItemsTotal | number : '2.2-2' }}</span>
+            </div>
+          </div>
+
+          <!-- ITEMS -->
+          <div class="items-card">
+            <h3>My Items ({{ selectedOrder.myItems.length }})</h3>
+            <span class="status-badge" [class]="getOrderStatusClass(selectedOrder.orderStatus)">
+              {{ getOrderStatusLabel(selectedOrder.orderStatus) }}
+            </span>
+            <div class="detail-item" *ngFor="let item of selectedOrder.myItems">
+              <img [src]="img(item.productImageUrl)" [alt]="item.productName" />
+              <div class="detail-item-info">
+                <h4>{{ item.productName }}</h4>
+                <p>{{ item.quantity }}x ${{ item.pricePerUnit | number : '2.2-2' }}</p>
+              </div>
+              <div class="detail-item-right">
+                <span class="detail-item-total">${{ item.totalPrice | number : '2.2-2' }}</span>
+                <span class="item-status" [class]="getItemStatusClass(item.status)">
+                  {{ getItemStatusLabel(item.status) }}
+                </span>
+
+                <div class="action-buttons">
+                  <button *ngIf="item.status === 1" class="action-btn approve" (click)="updateItemStatus(item.orderItemId, 2)">✓ Approve</button>
+                  <button *ngIf="item.status === 1" class="action-btn reject" (click)="updateItemStatus(item.orderItemId, 7)">✕ Cancel Item</button>
+                  <button *ngIf="item.status === 2" class="action-btn process" (click)="updateItemStatus(item.orderItemId, 3)">📦 Start Processing</button>
+                  <button *ngIf="item.status === 3" class="action-btn ship" (click)="updateItemStatus(item.orderItemId, 4)">🚚 Mark Shipped</button>
+                  <button *ngIf="item.status === 4" class="action-btn deliver" (click)="updateItemStatus(item.orderItemId, 5)">🚚 Mark Out for Delivery</button>
+                  <button *ngIf="item.status === 5" class="action-btn deliver" (click)="updateItemStatus(item.orderItemId, 6)">✓ Mark Delivered</button>
+                </div>
+
+              </div>
+            </div>
+
+            
+          </div>
+        </div>
       </div>
     </div>
 

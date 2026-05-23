@@ -2,6 +2,7 @@
 using e_commerce.Models;
 using e_commerce.Repositories.Interfaces;
 using e_commerce.Services.Interfaces;
+using System.Threading.Tasks;
 
 namespace e_commerce.Services.Implementation
 {
@@ -141,9 +142,9 @@ namespace e_commerce.Services.Implementation
             if (seller == null)
                 throw new Exception("Only sellers can access this.");
 
-            var status = statusFilter.HasValue ? (OrderStatus)statusFilter.Value : (OrderStatus?)null;
+            var status = statusFilter.HasValue ? (OrderItemStatus)statusFilter.Value : (OrderItemStatus?)null;
             var orders = await _unitOfWork.Orders.GetSellerOrdersAsync(seller.Id, page, pageSize, status);
-            var totalCount = await _unitOfWork.Orders.GetSellerOrdersCountAsync(seller.Id, status);
+            //var totalCount = await _unitOfWork.Orders.GetSellerOrdersCountAsync(seller.Id, status);
 
             var dtoList = orders.Select(o => MapToSellerDto(o, seller.Id)).ToList();
 
@@ -152,9 +153,9 @@ namespace e_commerce.Services.Implementation
                 Data = dtoList,
                 Page = page,
                 PageSize = pageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
-                HasNext = page * pageSize < totalCount,
+                TotalCount = dtoList.Count,
+                TotalPages = (int)Math.Ceiling((double)dtoList.Count / pageSize),
+                HasNext = page * pageSize < dtoList.Count,
                 HasPrevious = page > 1
             };
         }
@@ -200,7 +201,8 @@ namespace e_commerce.Services.Implementation
             }
 
             // Auto-update order status based on ALL item statuses
-            UpdateOrderStatus(orderItem.Order);
+            var order = await _unitOfWork.Orders.GetOrderWithItemsAsync(orderItem.OrderId);
+            UpdateOrderStatus(order);
 
             _unitOfWork.Orders.Update(orderItem.Order);
             await _unitOfWork.SaveChangesAsync();
@@ -254,6 +256,8 @@ namespace e_commerce.Services.Implementation
                 [OrderItemStatus.Approved] = new() { OrderItemStatus.Processing, OrderItemStatus.Cancelled },
                 [OrderItemStatus.Processing] = new() { OrderItemStatus.Shipped },
                 [OrderItemStatus.Shipped] = new() { OrderItemStatus.Delivered },
+                [OrderItemStatus.Shipped] = new() { OrderItemStatus.OutForDelivery },
+                [OrderItemStatus.OutForDelivery] = new() { OrderItemStatus.Delivered },
                 [OrderItemStatus.Delivered] = new() { },
                 [OrderItemStatus.Cancelled] = new() { }
             };
@@ -262,9 +266,10 @@ namespace e_commerce.Services.Implementation
                 throw new Exception($"Cannot change status from {current} to {next}.");
         }
 
-        private void UpdateOrderStatus(Order order)
+        private async Task UpdateOrderStatus(Order order)
         {
-            var items = order.Items.ToList();
+            
+            var items = order.Items;
 
             // If ANY item is cancelled by seller, leave order handling to buyer/system
             if (items.All(i => i.Status == OrderItemStatus.Cancelled))
@@ -280,21 +285,21 @@ namespace e_commerce.Services.Implementation
             {
                 order.Status = OrderStatus.Pending;
             }
-            else if (activeItems.All(i => i.Status >= OrderItemStatus.Processing || i.Status >= OrderItemStatus.Approved))
+            else if (activeItems.All(i => i.Status >= OrderItemStatus.Delivered))
             {
-                order.Status = OrderStatus.Processing;
-            }
-            else if (activeItems.All(i => i.Status >= OrderItemStatus.Shipped || i.Status >= OrderItemStatus.Delivered))
-            {
-                order.Status = OrderStatus.Shipped;
+                order.Status = OrderStatus.Delivered;
             }
             else if (activeItems.All(i => i.Status >= OrderItemStatus.OutForDelivery))
             {
                 order.Status = OrderStatus.OutForDelivery;
             }
-            else if (activeItems.All(i => i.Status >= OrderItemStatus.Delivered))
+            else if (activeItems.All(i => i.Status >= OrderItemStatus.Shipped ))
             {
-                order.Status = OrderStatus.Delivered;
+                order.Status = OrderStatus.Shipped;
+            }
+            else if (activeItems.All(i => i.Status >= OrderItemStatus.Approved ))
+            {
+                order.Status = OrderStatus.Processing;
             }
         }
 
@@ -335,13 +340,15 @@ namespace e_commerce.Services.Implementation
                 OrderNumber = order.OrderNumber,
                 OrderStatus = order.Status,
                 PaymentStatus = order.PaymentStatus,
+                PaymentProvider = order.PaymentProvider,    
                 OrderTotalPrice = order.TotalPrice,
-                MyItemsTotal = myItems.Sum(i => i.TotalPrice),
+                MyItemsTotal = myItems.Where(i => i.Status != OrderItemStatus.Cancelled).Sum(i => i.TotalPrice),
                 OrderDate = order.OrderDate,
                 TotalItemsInOrder = order.Items.Count,
                 MyItemsCount = myItems.Count,
                 BuyerName = order.Buyer?.User?.UserName ?? "Unknown",
                 BuyerEmail = order.Buyer?.User?.Email ?? "Unknown",
+                BuyerPhoneNumber = order.Buyer?.User?.PhoneNumber ?? "Unknown",
                 ShippingAddress = order.ShippingAddress,
                 MyItems = myItems
             };
