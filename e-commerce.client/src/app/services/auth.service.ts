@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +13,17 @@ export class AuthService {
 
   // Login
   login(email: string, password: string) {
-    return this.http.post<any>(`${environment.baseUrl}/api/auth/login`, { email, password });
+    return this.http.post<any>(`${environment.baseUrl}/auth/login`, { email, password });
   }
 
   // Register Buyer
   registerBuyer(body: any) {
-    return this.http.post<any>(`${environment.baseUrl}/api/auth/register-buyer`, body);
+    return this.http.post<any>(`${environment.baseUrl}/auth/register-buyer`, body);
   }
 
   // Register Seller
   registerSeller(body: any) {
-    return this.http.post<any>(`${environment.baseUrl}/api/auth/register-seller`, body);
+    return this.http.post<any>(`${environment.baseUrl}/auth/register-seller`, body);
   }
 
   // Helper method to save token data

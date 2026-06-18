@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-order-history',
@@ -15,7 +15,7 @@ export class OrderHistoryComponent implements OnInit {
   orders: any[] = [];
   loading: boolean = true;
 
-  private orderUrl = `${environment.baseUrl}/api/Order`;
+  private orderUrl = `${environment.baseUrl}/Order`;
 
   constructor(
     private http: HttpClient,

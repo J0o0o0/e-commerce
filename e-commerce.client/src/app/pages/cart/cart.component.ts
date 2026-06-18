@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 import { CartService } from '../../services/cart.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class CartComponent implements OnInit {
   loading: boolean = true;
   errorMessage: string = '';
 
-  private baseUrl = `${environment.baseUrl}/api/Cart`;
+  private baseUrl = `${environment.baseUrl}/Cart`;
 
   constructor(
     private http: HttpClient,

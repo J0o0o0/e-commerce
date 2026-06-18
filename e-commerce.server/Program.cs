@@ -16,10 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Auto-create database tables on startup
-using var scope = builder.Services.BuildServiceProvider().CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-dbContext.Database.Migrate();
 
 // Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
@@ -133,6 +129,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment.prod';
 
 @Component({
   selector: 'app-seller-dashboard',
@@ -41,8 +41,8 @@ export class SellerDashboardComponent implements OnInit {
   totalCount: number = 0;
   orderStatusFilter: number | null = null;
 
-  private baseUrl = `${environment.baseUrl}/api/Product`;
-  private orderUrl = `${environment.baseUrl}/api/Order`;
+  private baseUrl = `${environment.baseUrl}/Product`;
+  private orderUrl = `${environment.baseUrl}/Order`;
 
   constructor(
     private http: HttpClient,

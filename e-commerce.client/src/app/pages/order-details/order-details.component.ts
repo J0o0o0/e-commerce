@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-order-details',
@@ -12,7 +12,7 @@ export class OrderDetailsComponent implements OnInit {
 
   order: any;
   loading: boolean = true;
-  private orderUrl = `${environment.baseUrl}/api/Order`;
+  private orderUrl = `${environment.baseUrl}/Order`;
 
   constructor(
     private http: HttpClient,

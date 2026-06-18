@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 import { CartService } from '../services/cart.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class ProductDetailsComponent implements OnInit {
   addedToCart: boolean = false;
   cartError: string = '';
 
-  private baseUrl = `${environment.baseUrl}/api/Cart`;
+  private baseUrl = `${environment.baseUrl}/Cart`;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,7 +28,7 @@ export class ProductDetailsComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.http.get<any>(`${environment.baseUrl}/api/Product/${id}`).subscribe(res => {
+    this.http.get<any>(`${environment.baseUrl}/Product/${id}`).subscribe(res => {
       this.product = res;
       this.selectedImage = res.images?.[0];
     });

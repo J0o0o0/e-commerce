@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 import { CartService } from '../../services/cart.service';
 
 @Component({
@@ -20,8 +20,8 @@ export class CheckoutComponent implements OnInit {
   selectedPayment: number = 1; // CashOnDelivery
   errorMessages: string[] = [];
 
-  private cartUrl = `${environment.baseUrl}/api/Cart`;
-  private orderUrl = `${environment.baseUrl}/api/Order`;
+  private cartUrl = `${environment.baseUrl}/Cart`;
+  private orderUrl = `${environment.baseUrl}/Order`;
 
   constructor(
     private http: HttpClient,
